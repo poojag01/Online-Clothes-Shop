@@ -73,11 +73,61 @@ include("admin/functions/functions.php")
 
 	}
 
-
-
-
-
 ?>
+
+<?php
+if(isset($_POST['add_cart']))  
+{
+
+$ip_add=getUserIp();    
+		$run_check=[];
+			$p_id=$_POST['add_cart'];
+			$p_title=$_POST['pro_title'];
+			$product_qty=$_POST['product_qty'];
+
+			$check_product="SELECT * FROM cart WHERE  c_id='$p_id' AND ip_add='$ip_add'";
+			
+			$num =0;
+			$run_check ='';
+			if ($run_check=mysqli_query($con,$check_product)) {
+				# code...
+					$num=mysqli_num_rows($run_check);
+					// echo "Num Return  $num";
+			}
+
+			
+			// if($num!=0)
+			// {
+			// 	echo "<script>alert('This product is already added in the cart')</script>";
+			// 	echo "<script>window.open('product.php?pro_id=$p_id','_self')</script>";
+			// }
+			
+			if($num==0){
+				$query="INSERT INTO cart (c_id,ip_add,qty) VALUES('$p_id','$ip_add','$product_qty')";
+				
+				if (mysqli_query($con,$query)) {
+					# code...
+					echo "<script>alert('Item added to the cart Successfully')</script>";
+				} 
+				else {
+  					
+  					echo "Error: " . $query . "<br>" . mysqli_error($con);
+
+  					echo "<script>alert(Error: " . $query . "<br>" . mysqli_error($con).")</script>";
+					}
+
+
+				echo "<script>window.open('product.php?pro_id=$p_id','_self')</script>";	
+			}
+			else{
+				echo "<script>alert('This product is already added in the cart')</script>";
+				echo "<script>window.open('product.php?pro_id=$p_id','_self')</script>";
+			}
+}  
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="zxx">
 <head>
@@ -144,8 +194,9 @@ include("admin/functions/functions.php")
 
 	<!-- product section product.php?add_cart=<?php #echo $pro_id ?> -->
 
-<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method = "POST" class="form-horizontal">	
-
+<form action="product.php" method = "POST" class="form-horizontal">	
+		<input type="hidden" name="add_cart" value="<?php echo $pro_id; ?>">
+		<input type="hidden" name="pro_title" value="<?php echo $product_title; ?>">
 	<section class="product-section">
 		<div class="container">
 			<div class="back-link">
@@ -218,7 +269,6 @@ include("admin/functions/functions.php")
 						</div>
 					</div>
 
-		<input type="hidden" name="add_cart" value="<?php echo $pro_id; ?>">
 
 					<div class="quantity">
 					
@@ -279,40 +329,6 @@ include("admin/functions/functions.php")
 </form>
 	<!-- product section end -->
 
-<?php
-
-if(isset($_POST['add_cart']))  
-{
-echo $_POST['add_cart'];
-echo $_POST['product_qty']; 
-echo $_POST['pro_title'];
-$ip_add=getUserIp();    
-
-			$p_id=$_POST['add_cart'];
-			$p_title=$_POST['pro_title'];
-			$product_qty=$_POST['product_qty'];
-
-			$check_product="select * from cart where ip_add='$ip_add' AND p_id='$p_id'";
-			$run_check=mysqli_query($connection,$check_product);
-			$num=mysqli_num_rows($run_check);
-			
-			if($num!=0)
-			{
-				echo "<script>alert('This product is already added in the cart')</script>";
-				echo "<script>window.open('product.php?pro_id=$p_id','_self')</script>";
-			}
-			if($num==0){
-				$query="insert into cart(c_id,ip_add,quantity) values('$pro_id','$ip_add','$product_qty')";
-				echo "jj";
-				$run_query=mysqli_query($connection,$query);
-				echo "<script>window.open('product.php?pro_id=$p_id','_self')</script>";	
-			}
-			else{
-				echo "<script>alert('This product is already added in the cart')</script>";
-				echo "<script>window.open('product.php?pro_id=$pro_id','_self')</script>";
-			}
-}  
-?>
 
 	<!-- RELATED PRODUCTS section -->
 	<section class="related-product-section">
